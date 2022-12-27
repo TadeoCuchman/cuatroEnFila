@@ -19,7 +19,8 @@ function App() {
     <div className="App">
       { game ? '' :
       <>
-      <span>Rules: Put 4 coins on a row to win, but do not let the other player make it first!</span>
+      <img src="/four.svg" alt="fourLogo" style={{width:'50px', marginBottom:'50px'}}/>
+      <span style={{ marginBottom:'50px'}}>Rules: Put 4 coins on a row to win, but do not let the other player make it first!</span>
       <span>Player1:</span>
       <input type="text" value={players[0].name} onClick={(e) => e.target.select()} onChange={(e)=> {
         players[0].name = e.target.value
