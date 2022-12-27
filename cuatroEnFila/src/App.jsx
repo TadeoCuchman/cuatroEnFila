@@ -19,6 +19,7 @@ function App() {
     <div className="App">
       { game ? '' :
       <>
+      <span>Rules: Put 4 coins on a row to win, but do not let the other player make it first!</span>
       <span>Player1:</span>
       <input type="text" value={players[0].name} onChange={(e)=> {
         players[0].name = e.target.value
