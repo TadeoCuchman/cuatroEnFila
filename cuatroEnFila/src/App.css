@@ -46,3 +46,13 @@ button {
   left: 30%;
   border-radius: 10px;
 }
+
+@media (max-width: 420px) {
+  .game {
+    width: 360px;
+    height: 360px;
+    background-color: rgb(168, 152, 122);
+    display: flex;
+    flex-wrap: wrap;
+  }
+}

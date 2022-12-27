@@ -15,10 +15,6 @@ function App() {
   ])
   const [game, setGame] = useState(false)
 
-  useEffect(() => {
-    console.log(players)
-  },[players])
-
   return (
     <div className="App">
       { game ? '' :

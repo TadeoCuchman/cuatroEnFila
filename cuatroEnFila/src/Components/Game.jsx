@@ -146,7 +146,6 @@ const Game = ({ players }) => {
   ]);
 
   const markBoxes = (index) => {
-    console.log(index);
 
     if (boxes[index].to == "") {
       if (turn == 0) {
@@ -186,7 +185,7 @@ const Game = ({ players }) => {
             className="box"
             style={{
               backgroundColor: colorOfBox(box.to),
-              width: `${580 / width}px`,
+            width: window.screen.width < 420 ? `${360 / width}px` : `${580 / width}px`,
             }}
             alt={box.to}
             onClick={() => (winner == "" ? markBoxes(index) : "")}
