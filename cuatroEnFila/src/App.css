@@ -1,0 +1,48 @@
+.App {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.gameContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.gameContainer span{
+  border-radius: 10px;
+  width: 100px;
+  text-align: center;
+}
+
+.game {
+  width: 580px;
+  height: 580px;
+  background-color: rgb(168, 152, 122);
+  display: flex;
+  flex-wrap: wrap;
+}
+
+button {
+  width: 60px;
+  height: 40px;
+  border: 1px solid black;
+  border-radius: 5px;
+  margin-top: 30px;
+  text-align: center;
+}
+
+.modal {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  top: 30%;
+  left: 30%;
+  border-radius: 10px;
+}
