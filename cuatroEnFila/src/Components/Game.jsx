@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Modal from "./Modal";
+import {init} from "../scripts/websocket.js"
 
 const width = 8;
 
@@ -17,12 +18,14 @@ for (let i = 1; i <= width * width; i++) {
   }
 }
 
-const Game = ({ players }) => {
+const Game = ({ players, size}) => {
   const [boxes, setBoxes] = useState([]);
   const [turn, setTurn] = useState(0);
   const [error, setError] = useState("");
   const [winner, setWinner] = useState("");
   const [modal, setModal] = useState(false);
+
+
 
   const createBoard = () => {
     const boxes = [];
@@ -36,6 +39,9 @@ const Game = ({ players }) => {
 
   useEffect(() => {
     createBoard();
+    setTimeout(() => {
+      init()
+    }, 1000)
   }, []);
 
   const moveIntoSquareBelow = () => {
@@ -171,6 +177,8 @@ const Game = ({ players }) => {
     return "brown";
   };
 
+  
+
   return (
     <div className="gameContainer">
       <span style={{ backgroundColor: "red" }}>{players[0].name}</span>
@@ -182,9 +190,10 @@ const Game = ({ players }) => {
         {boxes.map((box, index) => (
           <img
             key={index}
+            id={index}
             className="box"
             style={{
-              backgroundColor: colorOfBox(box.to),
+            backgroundColor: colorOfBox(box.to),
             width: window.screen.width < 420 ? `${360 / width}px` : `${580 / width}px`,
             }}
             alt={box.to}
