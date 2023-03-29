@@ -18,32 +18,27 @@ const style = {
 }
 
 
-const Modal = ({error, setError, winner, createBoard, setTurn, setWinner, setModal}) => {
+const Modal = ({error, setError, winner, setModal}) => {
     
     useEffect(() => {
       if(error){
         setTimeout(() => {
           setError('')
           setModal(false)
-        },[1500])
+        },[1000])
       }
     }, [])
 
   
 
     return (
+      <div className="modalContainer">
         <div className="modal" style={error ? style.error : style.success}>
             {error && <div className="error" style={style.error}>{error}</div>}
             {winner && 
             <>
               <div className="success">The Winner is: {winner}!!</div>
-              <button onClick={()=> {
-                createBoard([])
-                setWinner('')
-                setTurn(0)
-                setModal(false)
-              }}>Play Again</button>
-              <button onClick={()=> {
+              <button id="closeModal" onClick={()=> {
                   window.location.reload();
               }}>
                 Choose Players 
@@ -52,6 +47,8 @@ const Modal = ({error, setError, winner, createBoard, setTurn, setWinner, setMod
             </>
             }
         </div>
+        <div className="success"></div>
+      </div>
     )
 }
 

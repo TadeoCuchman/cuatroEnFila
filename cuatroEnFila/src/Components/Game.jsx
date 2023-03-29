@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
-import Modal from "./Modal";
-import {init} from "../scripts/websocket.js"
+import { useEffect, useState  } from "react";
+
 
 const width = 8;
 
@@ -18,37 +17,52 @@ for (let i = 1; i <= width * width; i++) {
   }
 }
 
-const Game = ({ players, size}) => {
+
+const Game = ({size, mode, setModal, winner, setWinner, setError}) => {
   const [boxes, setBoxes] = useState([]);
   const [turn, setTurn] = useState(0);
-  const [error, setError] = useState("");
-  const [winner, setWinner] = useState("");
-  const [modal, setModal] = useState(false);
+  
+  const matrix = Array(8).fill().map(() => Array(8).fill(0));
+  const [gameState, setGameState] = useState(matrix);
+  const [invited, setInvited] = useState(false);
+  const [players, setPlayers] = useState([
+    {
+      index: 0,
+      name: "Player"
+    },
+    {
+      index: 1,
+      name: "Player2",
+    },
+]);
 
-
-
+  
+  
   const createBoard = () => {
     const boxes = [];
     for (let i = 0; i < width * width; i++) {
       const box = { to: "" };
       boxes.push(box);
     }
-
-    setBoxes(boxes);
+    setBoxes(boxes); 
   };
-
+  
+  
   useEffect(() => {
+   
     createBoard();
-    setTimeout(() => {
-      init()
-    }, 1000)
+   
   }, []);
 
+
+  
   const moveIntoSquareBelow = () => {
     for (let i = 0; i <= (width - 1) * width - 1; i++) {
       if (boxes[i + width].to == "") {
         boxes[i + width].to = boxes[i].to;
+        boxes[i + width].alt = boxes[i].alt;
         boxes[i].to = "";
+        boxes[i].alt = "";
       }
     }
   };
@@ -58,12 +72,12 @@ const Game = ({ players, size}) => {
       const columnOfFour = [i, i + width, i + width * 2, i + width * 3];
 
       if (columnOfFour.every((box) => boxes[box].to == "player1")) {
-        setWinner(players[0].name);
+        setWinner("player1");
         setModal(true);
       }
 
       if (columnOfFour.every((box) => boxes[box].to == "player2")) {
-        setWinner(players[1].name);
+        setWinner("player2");
         setModal(true);
       }
     }
@@ -76,12 +90,12 @@ const Game = ({ players, size}) => {
       if (notValidRigth.includes(i)) continue;
 
       if (rowOfFour.every((box) => boxes[box].to == "player1")) {
-        setWinner(players[0].name);
+        setWinner("player1");
         setModal(true);
       }
 
       if (rowOfFour.every((box) => boxes[box].to == "player2")) {
-        setWinner(players[1].name);
+        setWinner("player2");
         setModal(true);
       }
     }
@@ -99,12 +113,12 @@ const Game = ({ players, size}) => {
       if (notValidLeft.includes(i)) continue;
 
       if (diagonalOfFourLeft.every((box) => boxes[box].to == "player1")) {
-        setWinner(players[0].name);
+        setWinner("player1");
         setModal(true);
       }
 
       if (diagonalOfFourLeft.every((box) => boxes[box].to == "player2")) {
-        setWinner(players[1].name);
+        setWinner("player2");
         setModal(true);
       }
     }
@@ -122,12 +136,12 @@ const Game = ({ players, size}) => {
       if (notValidRigth.includes(i)) continue;
 
       if (diagonalOfFourRigth.every((box) => boxes[box].to == "player1")) {
-        setWinner(players[0].name);
+        setWinner("player1");
         setModal(true);
       }
 
       if (diagonalOfFourRigth.every((box) => boxes[box].to == "player2")) {
-        setWinner(players[1].name);
+        setWinner("player2");
         setModal(true);
       }
     }
@@ -152,8 +166,7 @@ const Game = ({ players, size}) => {
   ]);
 
   const markBoxes = (index) => {
-
-    if (boxes[index].to == "") {
+    if (boxes[index].to == "" && winner == "") {
       if (turn == 0) {
         boxes[Math.round(index % width)].to = "player1";
         setTurn(1);
@@ -168,6 +181,21 @@ const Game = ({ players, size}) => {
     }
   };
 
+  const markBoxesOnline = (index) => {
+    if (boxes[index].to == "" && winner == "" ) {
+      if(players[0].index == turn){
+        boxes[Math.round(index % width)].to = "player1";
+      } else {
+        boxes[Math.round(index % width)].to = "player2";
+      }
+    } else {
+      setError("Box taken!");
+      setModal(true);
+    }
+      turn == 0 ? setTurn(1) : setTurn(0)
+      setBoxes([...boxes]);
+  }
+
   const colorOfBox = (player) => {
     if (player == "player1") {
       return "red";
@@ -177,15 +205,8 @@ const Game = ({ players, size}) => {
     return "brown";
   };
 
-  
 
   return (
-    <div className="gameContainer">
-      <span style={{ backgroundColor: "red" }}>{players[0].name}</span>
-      <span>VS</span>
-      <span style={{ backgroundColor: "green" }}>{players[1].name}</span>
-      <br />
-
       <div className="game">
         {boxes.map((box, index) => (
           <img
@@ -197,24 +218,12 @@ const Game = ({ players, size}) => {
             width: window.screen.width < 420 ? `${360 / width}px` : `${580 / width}px`,
             }}
             alt={box.to}
-            onClick={() => (winner == "" ? markBoxes(index) : "")}
+            onClick={() => {
+              mode == 'Multiplayer' ? markBoxes(index) : markBoxesOnline(index)
+            }}
           ></img>
         ))}
       </div>
-      {modal ? (
-        <Modal
-          setError={setError}
-          error={error}
-          setModal={setModal}
-          winner={winner}
-          createBoard={createBoard}
-          setTurn={setTurn}
-          setWinner={setWinner}
-        />
-      ) : (
-        ""
-      )}
-    </div>
   );
 };
 
