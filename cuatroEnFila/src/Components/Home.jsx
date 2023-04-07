@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-    Link,
-  } from "react-router-dom";
+import {Link} from "react-router-dom";
 
 const style = {
 
@@ -61,7 +59,7 @@ const Home = ({players, setPlayers, context, mode, setMode}) => {
                 setPlayers([...players]);
                 }}
             />
-            {mode === "Invite a friend" ? <span>Url: <Link to={{ pathname: '/Game', search: `?context=${context}&invited=true` }} target="_blank">{window.location.origin}/Game/{context}</Link></span> : ''}
+            {mode === "Invite a friend" ? <span>Url: <Link to={{ pathname: '/preGame', search: `?context=${context}&invited=true` }} target="_blank">{window.location.origin}/preGame/{context}</Link></span> : ''}
             {mode === "Multiplayer" ? (
                 <>
                 <span>Player2:</span>

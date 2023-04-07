@@ -82,7 +82,9 @@ wss.on('connection', (ws, req) => {
                     clientsNames.push(player);
                 })
                 console.log(clientsNames)
-                ws.send(JSON.stringify({state:'Names', names:clientsNames, namesCheck:true}))
+                clients[context].forEach((client)=>{
+                    client.send(JSON.stringify({state:'Names', names:clientsNames, namesCheck:true}))
+                })
             }
         }
 

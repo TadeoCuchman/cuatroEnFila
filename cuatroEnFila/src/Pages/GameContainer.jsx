@@ -7,46 +7,39 @@ import ChooseNameModal from '../Components/ChooseNameModal';
 import init from "../scripts/websocket.js"
 
 
-function GameContainer({size, mode}) {
-    const [waiting, setWaiting] = useState(true);
-    const [modal, setModal] = useState(false);
-    const [invited, setInvited] = useState(false);
-    const [error, setError] = useState("");
-    const [winner, setWinner] = useState("");
-    const [players, setPlayers] = useState([
-        {
-          index: 0,
-          name: "Player"
-        },
-        {
-          index: 1,
-          name: "Player2",
-        },
-    ]);
 
+function GameContainer({size, mode, invited, players, setPlayers, rerender, setRerender}) {
+  const [waiting, setWaiting] = useState(true);
+  const [modal, setModal] = useState(false);
+ 
+  const [error, setError] = useState("");
+  const [winner, setWinner] = useState("");
+  // const [players, setPlayers] = useState([
+  //     {
+  //       index: 0,
+  //       name: "Player"
+  //     },
+  //     {
+  //       index: 1,
+  //       name: "Player2",
+  //     },
+  // ]);
 
+  if(mode=='Invite a friend' && !rerender){
+    init(setWaiting, setPlayers, players, invited)
+    // setRerender(true)
+  }
 
-
-    if(mode=='Invite a friend'){
-        console.log(players)
-        init(players[0].name, setWaiting, setPlayers, players, setInvited, invited)
-    }
-
-    const isOpenModal = () => {
-    
-    }
-    const onCloseModal = () => {
-      setInvited(false)
+  const isOpenModal = () => {
   
-    }
-    const onSubmitModal = () => {
-      setInvited(false)
-    }
+  }
+
+  const onSubmitModal = (name) => {
+  }
   
   return (
     <div className="gameContainer">
-        {waiting && mode == 'Invite a friend'? <ChooseNameModal isOpen={isOpenModal} onClose={onCloseModal} onSubmit={onSubmitModal} setPlayers={setPlayers} players={players} waiting={true}/> : ''}
-        {invited ? <ChooseNameModal isOpen={isOpenModal} onClose={onCloseModal} onSubmit={onSubmitModal} setPlayers={setPlayers} players={players} waiting={false} /> : ''}
+        {waiting && mode == 'Invite a friend'? <ChooseNameModal isOpen={isOpenModal} onSubmit={onSubmitModal} setPlayers={setPlayers} players={players} waiting={true}/> : ''}
         <Names players={players}/>
         <Game size={size} mode={mode} setModal={setModal} winner={winner} setWinner={setWinner} setError={setError}/>
         {modal ? (
