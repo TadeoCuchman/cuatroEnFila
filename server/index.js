@@ -2,12 +2,11 @@ const express = require('express');
 const { client } = require('websocket');
 const WebSocket = require('ws');
 const SocketServer = require('ws').Server;
+var url = require("url");
 
 const server = express().listen(3000);
 const wss = new SocketServer({server});
 const clients = {};
-const opponentNames = []
-const turnId = []
 
 function originIsAllowed(origin) {
     // put logic here to detect whether the specified origin is allowed.
@@ -21,53 +20,101 @@ wss.getUniqueID = function () {
     return s4() + s4() + '-' + s4();
 };
 
-wss.on('connection', (ws, req) => {
-    ws.id = wss.getUniqueID();
-    //console.log('remote access', req.socket.remoteAddress);
+function deleteWsById(set, id) {
+    set.forEach((obj) => {
+        if (obj.id === id) {
+        set.delete(obj);
+        }
+    });
+}
 
+function deleteContextByContext(context) {
+    for (const client in clients) {
+      if (clients.hasOwnProperty(context)) {
+        if (client === context) {
+          delete clients[context];
+          return;
+        }
+      }
+    }
+}
+
+wss.on('connection', (ws, req) => {
+    var parsedUrl = url.parse(req.url, true);
+    var queryAsObject = parsedUrl.query;
+    console.log('context', queryAsObject.context);
+    console.log('id', queryAsObject.id);
+    
     const key = req.headers['sec-websocket-key'];
     console.log('new connection : ' + key)
-    const context = req.url.slice(1);
-    console.log('context : ' +  context)
+    const context = queryAsObject.context;
+    const id = queryAsObject.id;
     
-    console.log('[Server] a client was connected to server : '  );
-    // If the context is not in the dictionary, create a new set of connected players
-    if (!clients[context]) {
-        clients[context] = new Set();
+    let foundObject = null;
+    if(clients[context]){
+        clients[context].forEach((client) => {
+        console.log('clientid',client.id)
+        if (client.id === id) {
+            foundObject = client;
+        }
+        });
     }
-    
-    // If the number of connected players in this context is already 2, reject the connection
-    if (clients[context].size >= 2) {
-        ws.close();
-        return;
-    }
+    console.log('ipaaa',clients)
 
-    clients[context].add(ws);
-    // console.log(clients[context])
-
-    if(clients[context].size == 1){
-        ws.send(JSON.stringify({message: 'Welcome new client! Your Id is ' + ws.id + '. We are waiting for player 2', id: ws.id, waiting : true}))
+    if(foundObject == null){
+        console.log('entroacqui ')
+        ws.id = wss.getUniqueID();
+        
+        
+        // If the context is not in the dictionary, create a new set of connected players
+        if (!clients[context]) {
+            clients[context] = new Set();
+        }
+        
+        // If the number of connected players in this context is already 2, reject the connection
+        if (clients[context].size >= 2) {
+            console.log('esto',clients[context].has(ws))
+            if(!clients[context].has(ws)){
+                console.log('fallaste')
+                ws.close();
+                return;
+            }
+        } else {
+            clients[context].add(ws);
+        }
+        console.log('clientsContexts',Object.keys(clients));
+                
+        if(clients[context].size == 1){
+            clients[context].turn = ws.id;
+            ws.send(JSON.stringify({message: 'Welcome new client! Your Id is ' + ws.id + '. We are waiting for player 2', id: ws.id, waiting : true}))
+        } else {
+            ws.send(JSON.stringify({type: 'id', id: ws.id}))
+            // const matrix = Array(8).fill().map(() => Array(8).fill(0));
+            // let wsIds = []
+            // clients[context].forEach((client)=>{
+            //     wsIds.push(client.id)
+            // })
+            // clients[context].forEach((client)=>{
+            //     // console.log(client)
+            //     client.send(JSON.stringify({data : {
+            //         state: matrix,
+            //         client: wsIds,
+            //         turn: clients[context].turn
+            //     }}))
+            // })
+        }
     } else {
-        const matrix = Array(8).fill().map(() => Array(8).fill(0));
-        let wsIds = []
-        clients[context].forEach((client)=>{
-            wsIds.push(client.id)
-        })
-        clients[context].forEach((client)=>{
-            // console.log(client)
-            client.send(JSON.stringify({data : {
-                state: matrix,
-                client: wsIds
-            }}))
-        })
+        ws.send(JSON.stringify({message: 'Welcome Back', id: ws.id}))
+
     }
+    
 
 
     ws.on('message', (data) => {
         console.log('[Server] Message received: ' + data + ' by '+ ws.id);
-
+        //when players connect to the game in order to recieve their names
         const dataJson = JSON.parse(data)
-        if(dataJson.state == "newPlayer"){
+        if(dataJson.type == "newPlayer"){
             // Assume we have a WebSocket connection object called ws and a context called "myContext"
             clients[context].forEach((client)=>{
                 if (client === ws) {
@@ -81,58 +128,46 @@ wss.on('connection', (ws, req) => {
                     const player = {id:client.id, name:client.name}
                     clientsNames.push(player);
                 })
-                console.log(clientsNames)
+                // console.log(clientsNames)
                 clients[context].forEach((client)=>{
-                    client.send(JSON.stringify({state:'Names', names:clientsNames, namesCheck:true}))
+                    client.send(JSON.stringify({state:'Names', names:clientsNames, namesCheck:true, turn: clients[context].turn}))
                 })
             }
         }
 
-        // const opponentName = JSON.parse(data)
-
-        // if(opponentNames.length < 2){
-        //     opponentNames.push(opponentName.opponentName)
-        //     if(opponentNames.length == 2) {
-        //         turnId.push(clients[0].id)
-        //         clients.forEach( function each(client) {
-        //             if(client.readyState === WebSocket.OPEN) {
-        //                 client.send(JSON.stringify({names:opponentNames}))
-        //             }
-        //         })
-        //     }  
-        // }
-        // if(data[0] === 123) {
-        //     const parsedData = JSON.parse(data);
-        //     clients.forEach( function each(client) {
-        //         if(client.id !== ws.id && client.readyState === WebSocket.OPEN) {
-        //             client.send(JSON.stringify({
-        //                 id: ws.id, 
-        //                 column: parsedData.column, 
-        //                 isFirst: clients[0].id == ws.id ? true: false,
-        //                 opponentName:clients[0].id == ws.id  ? opponentNames[0] : opponentNames[1],
-        //                 turn: ws.id == turnId[0] ? true : false
-        //             }))
-        //         }
-        //     })  
-            
-        //     if(clients.length > 1){
-        //         console.log(turnId, ws.id)
-        //         turnId.pop()
-        //         const turn = ws.id == clients[0].id ? clients[0].id : clients[1].id
-        //         turnId.push(turn)
-        //     }
-
-        // }
+        //send column of other player
+        if(dataJson.type == 'column' && clients[context].turn == ws.id){
+            clients[context].forEach((client)=>{
+                if(client.id != ws.id){
+                    // console.log(client)
+                    client.send(JSON.stringify({
+                        type:'column',
+                        id: ws.id, 
+                        column: dataJson.state,
+                        turn: clients[context].turn
+                    }))
+                    clients[context].turn = client.id;
+                }
         
+            })
+        }
+
     });
     
 
     ws.on('close', function close() {
         console.log('WebSocket connection closed for context:', context);
         // Remove the WebSocket connection from the clients object for the given context
-        // clients[context] = clients[context].filter(function (client) {
-        //   return client !== ws;
-        // })
+        console.log(clients[context].size)
+        if(clients[context].size == 0) {
+            deleteContextByContext(context);
+        } else if(clients[context].size == 1) {
+            setTimeout(() => {
+                deleteContextByContext(context);
+            },30000)
+        }
+        console.log(Object.keys(clients));
+
     })
 
     ws.on('error', (err) => {        

@@ -42,7 +42,6 @@ function App() {
 
   useEffect(()=>{
     setContext(s4())
-    console.log(invited)
   },[])
 
   return (

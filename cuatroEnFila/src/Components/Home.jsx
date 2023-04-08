@@ -44,11 +44,20 @@ const Home = ({players, setPlayers, context, mode, setMode}) => {
                 Rules: Put 4 coins on a row to win, but do not let the other player
                 make it first!
             </span>
+            {/* <span>Choose the size of the game:</span>
+          <input
+            type="number"
+            value={size}
+            onChange={(e) => setSize(e.target.value)}
+          />
+          <br />
+          <br /> */}
             <select onChange={(e) => setMode(e.target.value)}>
                 <option>Invite a friend</option>
     {/*             <option>Online</option> */}           
                 <option>Multiplayer</option>
             </select>
+            <br />
             <span>Player:</span>
             <input
                 type="text"
@@ -59,7 +68,7 @@ const Home = ({players, setPlayers, context, mode, setMode}) => {
                 setPlayers([...players]);
                 }}
             />
-            {mode === "Invite a friend" ? <span>Url: <Link to={{ pathname: '/preGame', search: `?context=${context}&invited=true` }} target="_blank">{window.location.origin}/preGame/{context}</Link></span> : ''}
+            {mode === "Invite a friend" ? <span>Url: <Link to={{ pathname: '/preGame', search: `?context=${context}&invited=true&size=${size}` }} target="_blank">{window.location.origin}/preGame/{context}/{size}</Link></span> : ''}
             {mode === "Multiplayer" ? (
                 <>
                 <span>Player2:</span>
@@ -76,14 +85,11 @@ const Home = ({players, setPlayers, context, mode, setMode}) => {
             ) : (
                 ""
             )}
-{/*           <span>Choose the size of the game:</span>
-          <input
-            type="number"
-            value={size}
-            onChange={(e) => setSize(e.target.value)}
-          /> */}
+            <br />
+            <br />
+         
 
-          <button><Link to={{ pathname: '/Game', search: `?context=${context}`}}>Go to Game</Link></button>
+          <button><Link to={{ pathname: '/Game', search: `?context=${context}&size=${size}`}}>Go to Game</Link></button>
         </>
       )}
       </div>

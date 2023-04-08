@@ -18,14 +18,14 @@ for (let i = 1; i <= width * width; i++) {
 }
 
 
-const Game = ({size, mode, setModal, winner, setWinner, setError}) => {
+const Game = ({size, mode, setModal, winner, setWinner, setError, isAllowed}) => {
   const [boxes, setBoxes] = useState([]);
   const [turn, setTurn] = useState(0);
   
-  const matrix = Array(8).fill().map(() => Array(8).fill(0));
-  const [gameState, setGameState] = useState(matrix);
-  const [invited, setInvited] = useState(false);
-  const [players, setPlayers] = useState([
+  // const matrix = Array(8).fill().map(() => Array(8).fill(0));
+  // const [gameState, setGameState] = useState(matrix);
+  
+  const players = [
     {
       index: 0,
       name: "Player"
@@ -34,7 +34,7 @@ const Game = ({size, mode, setModal, winner, setWinner, setError}) => {
       index: 1,
       name: "Player2",
     },
-]);
+];
 
   
   
@@ -182,18 +182,21 @@ const Game = ({size, mode, setModal, winner, setWinner, setError}) => {
   };
 
   const markBoxesOnline = (index) => {
-    if (boxes[index].to == "" && winner == "" ) {
-      if(players[0].index == turn){
-        boxes[Math.round(index % width)].to = "player1";
+    console.log(isAllowed)
+    if (isAllowed) {
+      if (boxes[index].to == "" && winner == "" ) {
+        if(players[0].index == turn){
+          boxes[Math.round(index % width)].to = "player1";
+        } else {
+          boxes[Math.round(index % width)].to = "player2";
+        }
       } else {
-        boxes[Math.round(index % width)].to = "player2";
+        setError("Box taken!");
+        setModal(true);
       }
-    } else {
-      setError("Box taken!");
-      setModal(true);
+        turn == 0 ? setTurn(1) : setTurn(0)
+        setBoxes([...boxes]);
     }
-      turn == 0 ? setTurn(1) : setTurn(0)
-      setBoxes([...boxes]);
   }
 
   const colorOfBox = (player) => {
@@ -214,14 +217,16 @@ const Game = ({size, mode, setModal, winner, setWinner, setError}) => {
             id={index}
             className="box"
             style={{
-            backgroundColor: colorOfBox(box.to),
-            width: window.screen.width < 420 ? `${360 / width}px` : `${580 / width}px`,
+              backgroundColor: colorOfBox(box.to),
+              width: window.screen.width < 420 ? `${360 / width}px` : `${580 / width}px`,
             }}
+            data-isallowed={isAllowed}
             alt={box.to}
-            onClick={() => {
-              mode == 'Multiplayer' ? markBoxes(index) : markBoxesOnline(index)
+            onClick={(e) => {
+              e.preventDefault()
+                mode == 'Multiplayer' ? markBoxes(index) : markBoxesOnline(index)
             }}
-          ></img>
+          ></img> 
         ))}
       </div>
   );

@@ -8,14 +8,14 @@ const PreGameContainer = ({players, setPlayers}) => {
   const location = useLocation();
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(location.search);
-  const [context, setContext] = useState(searchParams.get('context'));
-
+  const context = searchParams.get('context');
+  const size = searchParams.get('size')
   const isOpenModal = () => {
     
     }
 
     const onSubmitModal = (name) => {
-        navigate(`/Game?context=${context}`);
+        navigate(`/Game?context=${context}&size=${size}`);
 
     }
 

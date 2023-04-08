@@ -1,5 +1,7 @@
 import React from 'react';
 import { useEffect, useState  } from "react";
+import { useLocation } from "react-router-dom";
+
 import Modal from "../Components/Modal";
 import Names from "../Components/Names";
 import Game from "../Components/Game";
@@ -8,12 +10,19 @@ import init from "../scripts/websocket.js"
 
 
 
-function GameContainer({size, mode, invited, players, setPlayers, rerender, setRerender}) {
+function GameContainer({ mode, invited, players, setPlayers, rerender, setRerender}) {
+  const location = useLocation();
+
   const [waiting, setWaiting] = useState(true);
   const [modal, setModal] = useState(false);
- 
+  const [size, setSize] = useState(() => {
+    const searchParams = new URLSearchParams(location.search);
+    return (searchParams.get('size'))
+  });
   const [error, setError] = useState("");
   const [winner, setWinner] = useState("");
+  const [isAllowed, setIsAllowed] = useState(false);
+  
   // const [players, setPlayers] = useState([
   //     {
   //       index: 0,
@@ -25,9 +34,10 @@ function GameContainer({size, mode, invited, players, setPlayers, rerender, setR
   //     },
   // ]);
 
+
+
   if(mode=='Invite a friend' && !rerender){
-    init(setWaiting, setPlayers, players, invited)
-    // setRerender(true)
+    init(setWaiting, setPlayers, players, invited, size, setIsAllowed)
   }
 
   const isOpenModal = () => {
@@ -41,7 +51,7 @@ function GameContainer({size, mode, invited, players, setPlayers, rerender, setR
     <div className="gameContainer">
         {waiting && mode == 'Invite a friend'? <ChooseNameModal isOpen={isOpenModal} onSubmit={onSubmitModal} setPlayers={setPlayers} players={players} waiting={true}/> : ''}
         <Names players={players}/>
-        <Game size={size} mode={mode} setModal={setModal} winner={winner} setWinner={setWinner} setError={setError}/>
+        <Game size={size} mode={mode} setModal={setModal} winner={winner} setWinner={setWinner} setError={setError} isAllowed={isAllowed}/>
         {modal ? (
             <Modal
             setError={setError}
