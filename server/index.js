@@ -32,6 +32,9 @@ function deleteContextByContext(context) {
     for (const client in clients) {
       if (clients.hasOwnProperty(context)) {
         if (client === context) {
+            clients[context].forEach((client) => {
+                client.close()
+            })
           delete clients[context];
           return;
         }
@@ -40,29 +43,30 @@ function deleteContextByContext(context) {
 }
 
 wss.on('connection', (ws, req) => {
+    console.log('clientsContextsFirst',Object.keys(clients));
     var parsedUrl = url.parse(req.url, true);
     var queryAsObject = parsedUrl.query;
-    console.log('context', queryAsObject.context);
-    console.log('id', queryAsObject.id);
+    // console.log('context', queryAsObject.context);
+    // console.log('id', queryAsObject.id);
     
     const key = req.headers['sec-websocket-key'];
     console.log('new connection : ' + key)
     const context = queryAsObject.context;
     const id = queryAsObject.id;
+    console.log('first clients of context',clients[context])
     
-    let foundObject = null;
+    let foundClient = null;
     if(clients[context]){
         clients[context].forEach((client) => {
         console.log('clientid',client.id)
         if (client.id === id) {
-            foundObject = client;
+            foundClient = client;
         }
         });
     }
-    console.log('ipaaa',clients)
+    console.log('foundClient', foundClient)
 
-    if(foundObject == null){
-        console.log('entroacqui ')
+    if(foundClient == null){
         ws.id = wss.getUniqueID();
         
         
@@ -73,9 +77,7 @@ wss.on('connection', (ws, req) => {
         
         // If the number of connected players in this context is already 2, reject the connection
         if (clients[context].size >= 2) {
-            console.log('esto',clients[context].has(ws))
             if(!clients[context].has(ws)){
-                console.log('fallaste')
                 ws.close();
                 return;
             }
@@ -86,6 +88,7 @@ wss.on('connection', (ws, req) => {
                 
         if(clients[context].size == 1){
             clients[context].turn = ws.id;
+            clients[context].counter = [];
             ws.send(JSON.stringify({message: 'Welcome new client! Your Id is ' + ws.id + '. We are waiting for player 2', id: ws.id, waiting : true}))
         } else {
             ws.send(JSON.stringify({type: 'id', id: ws.id}))
@@ -112,10 +115,13 @@ wss.on('connection', (ws, req) => {
 
     ws.on('message', (data) => {
         console.log('[Server] Message received: ' + data + ' by '+ ws.id);
+        console.log('client size', clients[context].size);
+
         //when players connect to the game in order to recieve their names
         const dataJson = JSON.parse(data)
         if(dataJson.type == "newPlayer"){
             // Assume we have a WebSocket connection object called ws and a context called "myContext"
+            //add name to client
             clients[context].forEach((client)=>{
                 if (client === ws) {
                     // Modify the WebSocket connection object
@@ -152,21 +158,68 @@ wss.on('connection', (ws, req) => {
             })
         }
 
+        if(dataJson.type == 'playAgain'){
+            for (let obj of clients[context]) {
+            if (obj.id == dataJson.state.nextFirstId && ws.id == obj.id) {
+                obj.counter ? obj.counter = obj.counter + 1 : obj.counter = 1;
+                break;
+            }
+            }
+            clients[context].turn = dataJson.state.nextFirstId;
+  
+
+            let interClients = {player1:{id: '', counter:''}, player2:{id: '', counter:''}}
+            clients[context].forEach((client) => {
+                if(interClients.player1.id == ''){
+                    interClients.player1.counter = client.counter;
+                    interClients.player1.id = client.id;
+                }
+                if(interClients.player1.id != ''){
+                    interClients.player2.counter = client.counter;
+                    interClients.player2.id = client.id;
+                }
+            })
+
+            clients[context].forEach((client) => {
+                client.send(JSON.stringify({type: 'newSameGame', turn: clients[context].turn, info: {player1:{id: interClients.player1.id, count: interClients.player1.counter}, player2:{id: interClients.player2.id, count: interClients.player2.counter}},ready: clients[context].ready}))
+            })
+            
+
+            clients[context].ready = true;
+            
+
+
+            console.log(clients[context].ready)
+        }
+
     });
     
 
     ws.on('close', function close() {
         console.log('WebSocket connection closed for context:', context);
         // Remove the WebSocket connection from the clients object for the given context
-        console.log(clients[context].size)
-        if(clients[context].size == 0) {
-            deleteContextByContext(context);
-        } else if(clients[context].size == 1) {
-            setTimeout(() => {
+        if(clients.hasOwnProperty(context)) {
+            //remove client of context set when he leave
+            if(clients[context].size > 0) {
+                clients[context].forEach((client) => {
+                    if(client.id == ws.id){
+                        clients[context].delete(client);
+                    }
+                })
+            }
+            if(clients[context].size == 0) {
                 deleteContextByContext(context);
-            },30000)
+                ws.close(1000, 'Closing from server');
+            }  
+            // else if(clients[context].size == 1) {
+            //     setTimeout(() => {
+            //         deleteContextByContext(context);
+            //         ws.close(1000, 'Closing from server');
+            //     },30000)
+            // }
         }
-        console.log(Object.keys(clients));
+        console.log('clientsAfterClose',Object.keys(clients));
+        console.log('clientsAfterClose',clients[context])
 
     })
 
@@ -178,6 +231,10 @@ wss.on('connection', (ws, req) => {
             }
         })
     })
+
+
+
+ 
     
 }) 
 

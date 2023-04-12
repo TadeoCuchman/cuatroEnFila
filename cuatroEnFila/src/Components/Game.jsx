@@ -18,7 +18,7 @@ for (let i = 1; i <= width * width; i++) {
 }
 
 
-const Game = ({size, mode, setModal, winner, setWinner, setError, isAllowed}) => {
+const Game = ({size, mode, setModal, winner, setWinner, gamesCount, setError, isAllowed, lastWon}) => {
   const [boxes, setBoxes] = useState([]);
   const [turn, setTurn] = useState(0);
   
@@ -49,10 +49,14 @@ const Game = ({size, mode, setModal, winner, setWinner, setError, isAllowed}) =>
   
   
   useEffect(() => {
-   
+    console.log(gamesCount)
+    console.log(lastWon)
+    if(lastWon != null){
+      setTurn(lastWon)
+    }
     createBoard();
    
-  }, []);
+  }, [gamesCount]);
 
 
   
@@ -182,7 +186,6 @@ const Game = ({size, mode, setModal, winner, setWinner, setError, isAllowed}) =>
   };
 
   const markBoxesOnline = (index) => {
-    console.log(isAllowed)
     if (isAllowed) {
       if (boxes[index].to == "" && winner == "" ) {
         if(players[0].index == turn){
@@ -223,8 +226,8 @@ const Game = ({size, mode, setModal, winner, setWinner, setError, isAllowed}) =>
             data-isallowed={isAllowed}
             alt={box.to}
             onClick={(e) => {
-              e.preventDefault()
-                mode == 'Multiplayer' ? markBoxes(index) : markBoxesOnline(index)
+              e.preventDefault();
+              mode == 'Multiplayer' ? markBoxes(index) : markBoxesOnline(index)
             }}
           ></img> 
         ))}

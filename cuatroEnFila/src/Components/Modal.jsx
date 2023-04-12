@@ -1,4 +1,5 @@
 import { useEffect } from "react"
+import { Link } from "react-router-dom"
 
 const style = {
   error: {
@@ -18,7 +19,7 @@ const style = {
 }
 
 
-const Modal = ({error, setError, winner, setModal}) => {
+const Modal = ({error, setError, winner, setWinner, setModal, webWinner, mode}) => {
     
     useEffect(() => {
       if(error){
@@ -33,15 +34,21 @@ const Modal = ({error, setError, winner, setModal}) => {
 
     return (
       <div className="modalContainer">
-        <div className="modal" style={error ? style.error : style.success}>
+        <div className="modal2" style={error ? style.error : style.success}>
             {error && <div className="error" style={style.error}>{error}</div>}
             {winner && 
             <>
-              <div className="success">The Winner is: {winner}!!</div>
-              <button id="closeModal" onClick={()=> {
-                  window.location.reload();
-              }}>
-                Choose Players 
+              <div className="success" data-winners={webWinner.id}>The Winner is: {webWinner.name}!!</div>
+              <Link to='/'>
+                <button id="goHome">
+                  Go home 
+                </button>
+              </Link>
+              <button id="playAgain" data-winnerid={webWinner.id} onClick={() => {
+                setWinner('')
+                setModal(false)
+                }}>
+                  Play Again
               </button>
               
             </>
