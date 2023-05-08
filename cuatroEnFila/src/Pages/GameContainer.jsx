@@ -85,6 +85,7 @@ function GameContainer({ mode, invited, players, setPlayers, rerender, setRerend
             webWinner={webWinner}
             setWinner={setWinner}
             mode={mode}
+            setPlayers={setPlayers}
             />
         ) : (
             ""

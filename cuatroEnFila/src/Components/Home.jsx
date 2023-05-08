@@ -53,9 +53,9 @@ const Home = ({players, setPlayers, context, mode, setMode}) => {
           <br />
           <br /> */}
             <select onChange={(e) => setMode(e.target.value)}>
+                <option>Multiplayer</option>
                 <option>Invite a friend</option>
     {/*             <option>Online</option> */}           
-                <option>Multiplayer</option>
             </select>
             <br />
             <span>Player:</span>

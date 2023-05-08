@@ -19,7 +19,7 @@ const style = {
 }
 
 
-const Modal = ({error, setError, winner, setWinner, setModal, webWinner, mode}) => {
+const Modal = ({error, setError, winner, setWinner, setModal, webWinner, mode, setPlayers}) => {
     
     useEffect(() => {
       if(error){
@@ -47,6 +47,16 @@ const Modal = ({error, setError, winner, setWinner, setModal, webWinner, mode}) 
               <button id="playAgain" data-winnerid={webWinner.id} onClick={() => {
                 setWinner('')
                 setModal(false)
+                setPlayers([
+                  {
+                    index: 0,
+                    name: "Player"
+                  },
+                  {
+                    index: 1,
+                    name: "Player2",
+                  },
+              ])
                 }}>
                   Play Again
               </button>

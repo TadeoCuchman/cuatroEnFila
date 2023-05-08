@@ -17,8 +17,8 @@ function s4() {
 
 function App() {
   const searchParams = new URLSearchParams(location.search);
-  // const [mode, setMode] = useState("Multiplayer");
-  const [mode, setMode] = useState("Invite a friend");
+  const [mode, setMode] = useState("Multiplayer");
+  // const [mode, setMode] = useState("Invite a friend");
   const [rerender, setRerender] = useState(false);
   const [players, setPlayers] = useState([
       {
@@ -50,7 +50,7 @@ function App() {
         <Routes>
             <Route path="/" element={<Home players={players} setPlayers={setPlayers} context={context} mode={mode} setMode={setMode}/>} />
             <Route path={`/Game`} element={<GameContainer players={players} setPlayers={setPlayers} mode={mode} invited={invited} rerender={rerender} setRerender={setRerender}/>} />
-            <Route path={`/preGame`} element={<PreGameContainer players={players} setPlayers={setPlayers}/>} />
+            <Route path={`/preGame`} element={<PreGameContainer players={players} setPlayers={setPlayers} setMode={setMode}/>} />
         </Routes>
       </BrowserRouter>
 

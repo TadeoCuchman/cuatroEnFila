@@ -11,15 +11,17 @@ const init = (setWaiting, setPlayers, players, invited, size, setIsAllowed, setG
         const contextParam = searchParams.get('context');
 
         const posibleId = JSON.parse(localStorage.getItem('FourInRowGame'))?.id;
+        const socket = new W3CWebSocket('ws://websocketserver-9e8x.onrender.com' + '?context=' + contextParam + '&id=' + posibleId );    
         console.log('context from websocket', contextParam)
-        const socket = new W3CWebSocket('ws://localhost:3000/' + '?context=' + contextParam + '&id=' + posibleId );    
+        console.log('context from websocket', socket)
         
-        socket.addEventListener('open', () => {
+        socket.addEventListener('open', (req, res) => {
+            console.log(req, res)
+            console.log('socket', socket)
             socket.send(JSON.stringify({type: 'newPlayer', playerName: invited ? players[1] : players[0]}))
         })
     
-        
-        
+
         socket.addEventListener('message', (e) => {
             const data = JSON.parse(e.data)
 
