@@ -23,10 +23,11 @@ const style = {
 const Home = ({players, setPlayers, context, mode, setMode}) => {
     const [game, setGame] = useState(null);
     const [size, setSize] = useState(8);
+    const [linkUrl, setLinkUrl] = useState('');
  
     
     useEffect(() => {
-     
+     setLinkUrl(window.location.origin + `/preGame/?context=${context}&invited=true&size=${size}`)
     }, [])
 
   
@@ -68,7 +69,12 @@ const Home = ({players, setPlayers, context, mode, setMode}) => {
                 setPlayers([...players]);
                 }}
             />
-            {mode === "Invite a friend" ? <span>Url: <Link to={{ pathname: '/preGame', search: `?context=${context}&invited=true&size=${size}` }} target="_blank">{window.location.origin}/preGame/{context}/{size}</Link></span> : ''}
+            {mode === "Invite a friend" ? <span>Url: <Link to={{ pathname: '/preGame', search: `?context=${context}&invited=true&size=${size}` }} target="_blank">{linkUrl}</Link><button onClick={(event) => {
+              // Prevent the link from navigating to a new page
+              event.preventDefault();
+              // Copy the link URL to the clipboard
+              navigator.clipboard.writeText(linkUrl);
+            }}>Copy</button></span> : ''}
             {mode === "Multiplayer" ? (
                 <>
                 <span>Player2:</span>
