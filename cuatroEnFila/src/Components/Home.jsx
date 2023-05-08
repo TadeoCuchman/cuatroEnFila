@@ -84,11 +84,11 @@ const Home = ({players, setPlayers, context, mode, setMode}) => {
                   if (navigator.clipboard && !copied) {
                     navigator.clipboard.writeText(linkUrl);
                     event.target.style.backgroundColor = 'green';
-                    console.log(event.target.style.backgroundColor) 
+                    // // console.log(event.target.style.backgroundColor) 
                     setCopied(true)
                     setTimeout(() => {
                       event.target.style.backgroundColor = '';
-                      console.log(event.target.style.backgroundColor) 
+                      // // console.log(event.target.style.backgroundColor) 
                       setCopied(false)
                     }, 500)
                   }

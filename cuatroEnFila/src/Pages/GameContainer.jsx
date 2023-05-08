@@ -27,7 +27,7 @@ function GameContainer({ mode, invited, players, setPlayers, rerender, setRerend
   const [lastWon, setLastWon] = useState(null);
 
   useEffect(() => {
-    console.log(winner)
+    // console.log(winner)
     if(winner == 'player1'){
       setWebWinner({name: players[0].name, id: players[0].id})
       setLastWon(0)
@@ -38,12 +38,12 @@ function GameContainer({ mode, invited, players, setPlayers, rerender, setRerend
       setWebWinner({name: players[1].name, id: players[1].id})
       setLastWon(1)
     }
-    console.log(webWinner)
+    // console.log(webWinner)
   }, [winner])
 
   useEffect(() => {
     setTimeout(() => {
-      console.log(players)
+      // console.log(players)
     },1000)
   }, [players])
   

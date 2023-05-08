@@ -49,8 +49,8 @@ const Game = ({size, mode, setModal, winner, setWinner, gamesCount, setError, is
   
   
   useEffect(() => {
-    console.log(gamesCount)
-    console.log(lastWon)
+    // // console.log(gamesCount)
+    // // console.log(lastWon)
     if(lastWon != null){
       setTurn(lastWon)
     }
