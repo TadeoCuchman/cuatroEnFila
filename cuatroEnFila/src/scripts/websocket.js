@@ -11,7 +11,7 @@ const init = (setWaiting, setPlayers, players, invited, size, setIsAllowed, setG
         const contextParam = searchParams.get('context');
 
         const posibleId = JSON.parse(localStorage.getItem('FourInRowGame'))?.id;
-        const socket = new W3CWebSocket('ws://websocketserver-9e8x.onrender.com' + '?context=' + contextParam + '&id=' + posibleId );    
+        const socket = new W3CWebSocket('wss://websocketserver-9e8x.onrender.com' + '?context=' + contextParam + '&id=' + posibleId );    
         console.log('context from websocket', contextParam)
         console.log('context from websocket', socket)
         
