@@ -27,6 +27,7 @@ const Home = ({players, setPlayers, context, mode, setMode}) => {
  
     
     useEffect(() => {
+      console.log(context)
      setLinkUrl(window.location.origin + `/preGame/?context=${context}&invited=true&size=${size}`)
     }, [])
 
