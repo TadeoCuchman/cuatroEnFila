@@ -21,6 +21,9 @@ const init = (setWaiting, setPlayers, players, invited, size, setIsAllowed, setG
             socket.send(JSON.stringify({type: 'newPlayer', playerName: invited ? players[1] : players[0]}))
         })
     
+        // window.addEventListener('keypress', e => {
+        //     console.log(e)
+        // })
 
         socket.addEventListener('message', (e) => {
             const data = JSON.parse(e.data)

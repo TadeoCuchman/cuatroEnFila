@@ -24,6 +24,7 @@ const Home = ({players, setPlayers, context, mode, setMode}) => {
     const [game, setGame] = useState(null);
     const [size, setSize] = useState(8);
     const [linkUrl, setLinkUrl] = useState('');
+    const [copied, setCopied] = useState(false);
  
     
     useEffect(() => {
@@ -71,14 +72,26 @@ const Home = ({players, setPlayers, context, mode, setMode}) => {
                 setPlayers([...players]);
                 }}
             />
-            {mode === "Invite a friend" ? <span>Url: <Link to={{ pathname: '/preGame', search: `?context=${context}&invited=true&size=${size}` }} target="_blank">{window.location.origin}/preGame/?context={context}&invited=true&size={size}</Link><button onClick={(event) => {
-              // Prevent the link from navigating to a new page
-              event.preventDefault();
+            {mode === "Invite a friend" ? <span>Url:
+              {/* <Link to={{ pathname: '/preGame', search: `?context=${context}&invited=true&size=${size}` }} target="_blank">
+                </Link> */}
+                {linkUrl}
+                <button onClick={(event) => {
+                  // Prevent the link from navigating to a new page
+                  event.preventDefault();
 
-              // Copy the link URL to the clipboard if the Clipboard API is available
-              if (navigator.clipboard) {
-                navigator.clipboard.writeText(linkUrl);
-              }
+                  // Copy the link URL to the clipboard if the Clipboard API is available
+                  if (navigator.clipboard && !copied) {
+                    navigator.clipboard.writeText(linkUrl);
+                    event.target.style.backgroundColor = 'green';
+                    console.log(event.target.style.backgroundColor) 
+                    setCopied(true)
+                    setTimeout(() => {
+                      event.target.style.backgroundColor = '';
+                      console.log(event.target.style.backgroundColor) 
+                      setCopied(false)
+                    }, 500)
+                  }
             }}> Copy </button></span> : ''}
             {mode === "Multiplayer" ? (
                 <>
