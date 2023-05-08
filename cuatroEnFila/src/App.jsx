@@ -17,8 +17,8 @@ function s4() {
 
 function App() {
   const searchParams = new URLSearchParams(location.search);
-  const [mode, setMode] = useState("Multiplayer");
-  // const [mode, setMode] = useState("Invite a friend");
+  // const [mode, setMode] = useState("Multiplayer");
+  const [mode, setMode] = useState("Invite a friend");
   const [rerender, setRerender] = useState(false);
   const [players, setPlayers] = useState([
       {
