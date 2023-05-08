@@ -23,12 +23,14 @@ const style = {
 const Home = ({players, setPlayers, context, mode, setMode}) => {
     const [game, setGame] = useState(null);
     const [size, setSize] = useState(8);
-    const [linkUrl, setLinkUrl] = useState(`${window.location.origin}/preGame/?context=${context}&invited=true&size=${size}`);
+    const [linkUrl, setLinkUrl] = useState('');
  
     
     useEffect(() => {
-     
-    }, [])
+
+        setLinkUrl(`${window.location.origin}/preGame/?context=${context}&invited=true&size=${size}`)
+
+    }, [context])
 
   
 
