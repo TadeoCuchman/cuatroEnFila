@@ -23,12 +23,11 @@ const style = {
 const Home = ({players, setPlayers, context, mode, setMode}) => {
     const [game, setGame] = useState(null);
     const [size, setSize] = useState(8);
-    const [linkUrl, setLinkUrl] = useState('');
+    const [linkUrl, setLinkUrl] = useState(`${window.location.origin}/preGame/?context=${context}&invited=true&size=${size}`);
  
     
     useEffect(() => {
-      console.log(context)
-     setLinkUrl(window.location.origin + `/preGame/?context=${context}&invited=true&size=${size}`)
+     
     }, [])
 
   
@@ -55,8 +54,8 @@ const Home = ({players, setPlayers, context, mode, setMode}) => {
           <br />
           <br /> */}
             <select onChange={(e) => setMode(e.target.value)}>
-                <option>Invite a friend</option>
                 <option>Multiplayer</option>
+                <option>Invite a friend</option>
     {/*             <option>Online</option> */}           
             </select>
             <br />
@@ -70,12 +69,15 @@ const Home = ({players, setPlayers, context, mode, setMode}) => {
                 setPlayers([...players]);
                 }}
             />
-            {mode === "Invite a friend" ? <span>Url: <Link to={{ pathname: '/preGame', search: `?context=${context}&invited=true&size=${size}` }} target="_blank">{linkUrl}</Link><button onClick={(event) => {
+            {mode === "Invite a friend" ? <span>Url: <Link to={{ pathname: '/preGame', search: `?context=${context}&invited=true&size=${size}` }} target="_blank">{window.location.origin}/preGame/?context={context}&invited=true&size={size}</Link><button onClick={(event) => {
               // Prevent the link from navigating to a new page
               event.preventDefault();
-              // Copy the link URL to the clipboard
-              navigator.clipboard.writeText(linkUrl);
-            }}>Copy</button></span> : ''}
+
+              // Copy the link URL to the clipboard if the Clipboard API is available
+              if (navigator.clipboard) {
+                navigator.clipboard.writeText(linkUrl);
+              }
+            }}> Copy </button></span> : ''}
             {mode === "Multiplayer" ? (
                 <>
                 <span>Player2:</span>
