@@ -174,7 +174,7 @@ wss.on('connection', (ws, req) => {
                     interClients.player1.counter = client.counter;
                     interClients.player1.id = client.id;
                 }
-                if(interClients.player1.id != ''){
+                if(interClients.player2.id != ''){
                     interClients.player2.counter = client.counter;
                     interClients.player2.id = client.id;
                 }
