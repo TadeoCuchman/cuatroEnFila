@@ -17,17 +17,20 @@ function s4() {
 
 function App() {
   const searchParams = new URLSearchParams(location.search);
-  // const [mode, setMode] = useState("Multiplayer");
-  const [mode, setMode] = useState("Invite a friend");
+  const [mode, setMode] = useState("Multiplayer");
   const [rerender, setRerender] = useState(false);
   const [players, setPlayers] = useState([
       {
         index: 0,
-        name: "Player"
+        name: "Player",
+        winCount: 0,
+        firstTurn: true
       },
       {
         index: 1,
         name: "Player2",
+        winCount: 0,
+        firstTurn: false
       },
   ]);
   const [context, setContext] = useState();

@@ -8,6 +8,7 @@ const PreGameContainer = ({players, setPlayers, setMode}) => {
     const location = useLocation();
     const navigate = useNavigate();
     const searchParams = new URLSearchParams(location.search);
+    
     const context = searchParams.get('context');
     const size = searchParams.get('size')
     const isOpenModal = () => {

@@ -31,6 +31,8 @@
   background-color: rgb(168, 152, 122);
   display: flex;
   flex-wrap: wrap;
+  position: relative;
+  margin-top: 40px;
 }
 
 button {
@@ -38,8 +40,8 @@ button {
   height: 40px;
   border: 1px solid black;
   border-radius: 5px;
-  margin-top: 30px;
   text-align: center;
+  margin-top: 5px;
 }
 .modalContainer { 
   width: 100vw;
@@ -47,6 +49,7 @@ button {
   position: fixed;
   z-index: 40;
   background-color: rgba(250, 235, 215, 0.341);
+  z-index: 200;
 }
 .modal2 {
   position: absolute;
@@ -60,6 +63,8 @@ button {
   border-radius: 10px;
   /* margin-left: 30%; */
 }
+
+
 
 @media (max-width: 420px) {
   .game {

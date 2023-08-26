@@ -30,6 +30,7 @@ const Home = ({players, setPlayers, context, mode, setMode}) => {
     useEffect(() => {
 
         setLinkUrl(`${window.location.origin}/preGame/?context=${context}&invited=true&size=${size}`)
+        sessionStorage.setItem("actualGameLink", `${window.location.origin}/preGame/?context=${context}&invited=true&size=${size}`)
 
     }, [context])
 
@@ -44,10 +45,10 @@ const Home = ({players, setPlayers, context, mode, setMode}) => {
                 alt="fourLogo"
                 style={{ width: "50px", marginBottom: "50px" }}
             />
-            <span style={{ marginBottom: "50px" }}>
+            <h5 style={{ marginBottom: "50px" }}>
                 Rules: Put 4 coins on a row to win, but do not let the other player
                 make it first!
-            </span>
+            </h5>
             {/* <span>Choose the size of the game:</span>
           <input
             type="number"
@@ -57,12 +58,12 @@ const Home = ({players, setPlayers, context, mode, setMode}) => {
           <br />
           <br /> */}
             <select onChange={(e) => setMode(e.target.value)}>
-                <option>Invite a friend</option>
                 <option>Multiplayer</option>
+                <option>Invite a friend</option>
     {/*             <option>Online</option> */}           
             </select>
             <br />
-            <span>Player:</span>
+            <span>Choose Your Name:</span>
             <input
                 type="text"
                 value={players[0].name}
@@ -72,15 +73,11 @@ const Home = ({players, setPlayers, context, mode, setMode}) => {
                 setPlayers([...players]);
                 }}
             />
-            {mode === "Invite a friend" ? <span>Url:
-              {/* <Link to={{ pathname: '/preGame', search: `?context=${context}&invited=true&size=${size}` }} target="_blank">
-                </Link> */}
-                {linkUrl}
-                <button onClick={(event) => {
-                  // Prevent the link from navigating to a new page
+            {/* {mode === "Invite a friend" ? 
+            <div style={{display:'flex', flexDirection:'column', alignItems: 'center', marginTop:'20px'}} >
+              Url: {linkUrl}
+                <button style={{ marginTop:'10px', height:'20px'}} onClick={(event) => {
                   event.preventDefault();
-
-                  // Copy the link URL to the clipboard if the Clipboard API is available
                   if (navigator.clipboard && !copied) {
                     navigator.clipboard.writeText(linkUrl);
                     event.target.style.backgroundColor = 'green';
@@ -92,7 +89,8 @@ const Home = ({players, setPlayers, context, mode, setMode}) => {
                       setCopied(false)
                     }, 500)
                   }
-            }}> Copy </button></span> : ''}
+            }}> Copy </button>
+            </div> : ''} */}
             {mode === "Multiplayer" ? (
                 <>
                 <span>Player2:</span>
@@ -101,8 +99,8 @@ const Home = ({players, setPlayers, context, mode, setMode}) => {
                     value={players[1].name}
                     onClick={(e) => e.target.select()}
                     onChange={(e) => {
-                    players[1].name = e.target.value;
-                    setPlayers([...players]);
+                      players[1].name = e.target.value;
+                      setPlayers([...players]);
                     }}
                 />
                 </>
@@ -113,8 +111,12 @@ const Home = ({players, setPlayers, context, mode, setMode}) => {
             <br />
          
 
-          <button><Link to={{ pathname: '/Game', search: `?context=${context}&size=${size}`}}>Go to Game</Link></button>
-        </>
+            <Link style={{textDecoration:'none', color:'black'}} to={{ pathname: '/Game', search: mode == 'Multiplayer' ? '' : `?context=${context}&size=${size}` }}>
+              <button style={{height:'50px', width:'100px', boxShadow:' 0 1px 2px rgba(0,0,0,.2)' ,border: 'none', backgroundColor:' rgba(130, 3, 130, 0.683)',cursor:'pointer'}} >
+                Go to Game
+              </button>
+            </Link>   
+         </>
       )}
       </div>
     )

@@ -3,7 +3,7 @@ import {w3cwebsocket as W3CWebSocket} from 'websocket'
 import { useLocation } from "react-router-dom";
 
 
-const init = (setWaiting, setPlayers, players, invited, size, setIsAllowed, setGamesCount) => {
+const init = (setWaiting, setPlayers, players, invited, size, setIsAllowed) => {
     const location = useLocation();
 
     useEffect(()=> {
@@ -47,12 +47,16 @@ const init = (setWaiting, setPlayers, players, invited, size, setIsAllowed, setG
                     {
                       index: 0,
                       name: data.names[0].name.name,
-                      id: data.names[0].id
+                      id: data.names[0].id,
+                      winCount: 0,
+                      firstTurn:true,
                     },
                     {
                       index: 1,
                       name: data.names[1].name.name,
-                      id: data.names[1].id
+                      id: data.names[1].id,
+                      winCount: 0,
+                      firstTurn:false
                     },
                 ]);
             }
@@ -60,8 +64,7 @@ const init = (setWaiting, setPlayers, players, invited, size, setIsAllowed, setG
 
             //make the play of the other player
             if(data.type == 'column'){
-                if(document.getElementById(data.column).style.backgroundColor == 'brown'
-                 && data.id == data.turn){
+                if( data.id == data.turn){
                      setIsAllowed(true);
                      setTimeout(() => {
                         document.getElementById(data.column).click();
@@ -78,7 +81,9 @@ const init = (setWaiting, setPlayers, players, invited, size, setIsAllowed, setG
                 } else {
                     setIsAllowed(false)
                 }
-                setGamesCount({player1: data.info.player1.count, player2:data.info.player2.count})
+                players[0].winCount = data.info.player1.count;
+                players[1].winCount = data.info.player2.count;
+                setPlayers(players)
                 if(data.ready == true) {
                     setWaiting(false);
                 }else {
@@ -93,11 +98,13 @@ const init = (setWaiting, setPlayers, players, invited, size, setIsAllowed, setG
         })
     
         //game listener
-        document.getElementsByClassName('game')[0].addEventListener('click', (e) => {
+        document.getElementsByClassName('gameColumn')[0].addEventListener('click', (e) => {
             const isAllowed = e.target.getAttribute("data-isallowed")
             console.log(isAllowed)
             if(e.isTrusted && isAllowed == 'true') {
-                sendState('column', e.target.id % size);
+                console.log('e.target.id', e.target.id);
+                
+                sendState('column', e.target.id);
                 setTimeout(()=>{
                     setIsAllowed(false);
                 },10)

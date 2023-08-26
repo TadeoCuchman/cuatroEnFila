@@ -1,4 +1,4 @@
-import { useEffect, useState  } from "react";
+import { useEffect, useState } from "react";
 
 
 const width = 8;
@@ -18,48 +18,55 @@ for (let i = 1; i <= width * width; i++) {
 }
 
 
-const Game = ({size, mode, setModal, winner, setWinner, gamesCount, setError, isAllowed, lastWon}) => {
+const Game = ({ size, mode, setModal, winner, setWinner, setError, isAllowed, lastWon }) => {
   const [boxes, setBoxes] = useState([]);
+  const [columns, setColumns] = useState([]);
   const [turn, setTurn] = useState(0);
-  
+
   // const matrix = Array(8).fill().map(() => Array(8).fill(0));
   // const [gameState, setGameState] = useState(matrix);
-  
+
   const players = [
     {
       index: 0,
-      name: "Player"
     },
     {
       index: 1,
-      name: "Player2",
     },
-];
+  ];
 
-  
-  
+
+
   const createBoard = () => {
     const boxes = [];
     for (let i = 0; i < width * width; i++) {
       const box = { to: "" };
       boxes.push(box);
     }
-    setBoxes(boxes); 
+    for (let i = 0; i < width; i++) {
+      const column = { id: i + 'column', column: i };
+      columns.push(column);
+    }
+    setColumns(columns);
+    setBoxes(boxes);
   };
-  
-  
+
+
   useEffect(() => {
-    // // console.log(gamesCount)
-    // // console.log(lastWon)
-    if(lastWon != null){
+    if (lastWon != null) {
       setTurn(lastWon)
     }
     createBoard();
-   
-  }, [gamesCount]);
+
+  }, [winner]);
+
+  const onWinner = (player) => {
+    setWinner(player);
+    setModal(true);
+  }
 
 
-  
+
   const moveIntoSquareBelow = () => {
     for (let i = 0; i <= (width - 1) * width - 1; i++) {
       if (boxes[i + width].to == "") {
@@ -76,13 +83,11 @@ const Game = ({size, mode, setModal, winner, setWinner, gamesCount, setError, is
       const columnOfFour = [i, i + width, i + width * 2, i + width * 3];
 
       if (columnOfFour.every((box) => boxes[box].to == "player1")) {
-        setWinner("player1");
-        setModal(true);
+        onWinner("player1");
       }
 
       if (columnOfFour.every((box) => boxes[box].to == "player2")) {
-        setWinner("player2");
-        setModal(true);
+        onWinner("player2");
       }
     }
   };
@@ -94,13 +99,11 @@ const Game = ({size, mode, setModal, winner, setWinner, gamesCount, setError, is
       if (notValidRigth.includes(i)) continue;
 
       if (rowOfFour.every((box) => boxes[box].to == "player1")) {
-        setWinner("player1");
-        setModal(true);
+        onWinner("player1");
       }
 
       if (rowOfFour.every((box) => boxes[box].to == "player2")) {
-        setWinner("player2");
-        setModal(true);
+        onWinner("player2");
       }
     }
   };
@@ -117,13 +120,11 @@ const Game = ({size, mode, setModal, winner, setWinner, gamesCount, setError, is
       if (notValidLeft.includes(i)) continue;
 
       if (diagonalOfFourLeft.every((box) => boxes[box].to == "player1")) {
-        setWinner("player1");
-        setModal(true);
+        onWinner("player1");
       }
 
       if (diagonalOfFourLeft.every((box) => boxes[box].to == "player2")) {
-        setWinner("player2");
-        setModal(true);
+        onWinner("player2");
       }
     }
   };
@@ -140,27 +141,28 @@ const Game = ({size, mode, setModal, winner, setWinner, gamesCount, setError, is
       if (notValidRigth.includes(i)) continue;
 
       if (diagonalOfFourRigth.every((box) => boxes[box].to == "player1")) {
-        setWinner("player1");
-        setModal(true);
+        onWinner("player1");
       }
 
       if (diagonalOfFourRigth.every((box) => boxes[box].to == "player2")) {
-        setWinner("player2");
-        setModal(true);
+        onWinner("player2");
       }
     }
   };
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      moveIntoSquareBelow();
-      checkColumnOfFour();
-      checkRowOfFour();
-      checkDiagonalOfFourToLeft();
-      checkDiagonalOfFourToRigth();
-      setBoxes([...boxes]);
-    }, 200);
-    return () => clearInterval(timer);
+    if(!winner){
+      
+      const timer = setInterval(() => {
+        moveIntoSquareBelow();
+        checkColumnOfFour();
+        checkRowOfFour();
+        checkDiagonalOfFourToLeft();
+        checkDiagonalOfFourToRigth();
+        setBoxes([...boxes]);
+      }, 200);
+      return () => clearInterval(timer);
+    }
   }, [
     moveIntoSquareBelow,
     checkColumnOfFour,
@@ -187,8 +189,8 @@ const Game = ({size, mode, setModal, winner, setWinner, gamesCount, setError, is
 
   const markBoxesOnline = (index) => {
     if (isAllowed) {
-      if (boxes[index].to == "" && winner == "" ) {
-        if(players[0].index == turn){
+      if (boxes[index].to == "" && winner == "") {
+        if (players[0].index == turn) {
           boxes[Math.round(index % width)].to = "player1";
         } else {
           boxes[Math.round(index % width)].to = "player2";
@@ -197,8 +199,8 @@ const Game = ({size, mode, setModal, winner, setWinner, gamesCount, setError, is
         setError("Box taken!");
         setModal(true);
       }
-        turn == 0 ? setTurn(1) : setTurn(0)
-        setBoxes([...boxes]);
+      turn == 0 ? setTurn(1) : setTurn(0)
+      setBoxes([...boxes]);
     }
   }
 
@@ -213,6 +215,33 @@ const Game = ({size, mode, setModal, winner, setWinner, gamesCount, setError, is
 
 
   return (
+    <>
+      <div className="game gameColumn" style={{ position: "absolute" , zIndex: '1', backgroundColor: 'transparent'}}>
+        {columns.map((column, index) => (
+          <div
+            key={index}
+            id={index}
+            data-isallowed={isAllowed}
+            className="column"
+            style={{
+              height: '101%',
+              width: window.screen.width < 420 ? `${360 / width}px` : `${580 / width}px`,
+            }}
+            onMouseOver = {(e) => {
+              e.target.style.background = '#5000ff91'
+              e.target.style.transform = 'translateY(3%)'
+            }}
+            onMouseLeave = {(e) => {
+              e.target.style.background = 'transparent'
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              mode == 'Multiplayer' ? markBoxes(index) : markBoxesOnline(index)
+            }}
+          >
+          </div>
+        ))}
+      </div>
       <div className="game">
         {boxes.map((box, index) => (
           <img
@@ -223,15 +252,11 @@ const Game = ({size, mode, setModal, winner, setWinner, gamesCount, setError, is
               backgroundColor: colorOfBox(box.to),
               width: window.screen.width < 420 ? `${360 / width}px` : `${580 / width}px`,
             }}
-            data-isallowed={isAllowed}
             alt={box.to}
-            onClick={(e) => {
-              e.preventDefault();
-              mode == 'Multiplayer' ? markBoxes(index) : markBoxesOnline(index)
-            }}
-          ></img> 
+          ></img>
         ))}
       </div>
+    </>
   );
 };
 
